@@ -5,251 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Finance Manager</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            font-family: 'Roboto', Arial, sans-serif;
-            margin: 20px;
-            background: linear-gradient(to right, #ece9e6, #ffffff);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #84fab0, #8fd3f4);
             color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #4CAF50;
-        } 
-        form {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            width: 100%;
+            padding: 1rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        h2 {
+            text-align: center;
             margin-bottom: 20px;
+            color: #0066cc;
         }
-        form label {
-            font-weight: bold;
+        input, select, button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        form input, form select, form button {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        form button {
-            background-color: #4CAF50;
-            color: white;
+        button {
+            background-color: #0066cc;
+            color: #fff;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-weight: bold;
         }
-        form button:hover {
-            background-color: #45a049;
-        }
-        input#search {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            display: block;
+        button:hover {
+            background-color: #005bb5;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: white;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-        table th {
-            background-color: #4CAF50;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #0066cc;
             color: white;
-            text-align: left;
-            padding: 10px;
         }
-        table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        table tr:hover {
-            background-color: #f1f1f1;
-        }
-        #chartContainer {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        button.delete-btn {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button.delete-btn:hover {
-            background-color: #e53935;
-        }
-        button.download-btn {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: block;
+        canvas {
             margin: 20px auto;
-        }
-        button.download-btn:hover {
-            background-color: #1976D2;
         }
     </style>
 </head>
 <body>
-    <h1>Yashika Tidke's Personal Finance Manager</h1>
-
-    <form id="transactionForm">
-        <label for="description">Description:</label>
-        <input type="text" id="description" placeholder="Enter description" required>
-
-        <label for="amount">Amount (₹):</label>
-        <input type="number" id="amount" placeholder="Enter amount" required>
-
-        <label for="category">Category:</label>
+    <header>
+        <h1>Yashika Tidke's Personal Finance Manager</h1>
+    </header>
+    <div class="container">
+        <h2>Add a Transaction</h2>
+        <input type="date" id="date" placeholder="Date">
         <select id="category">
+            <option value="Personal Use">Personal Use</option>
             <option value="Food">Food</option>
-            <option value="Stationary">Stationary</option>
-            <option value="Medicines">Medicines</option>
-            <option value="Personal Usage">Personal Usage</option>
-            <option value="Transportation">Transportation</option>
+            <option value="Stationery">Stationery</option>
             <option value="Bills">Bills</option>
             <option value="Others">Others</option>
         </select>
+        <select id="type">
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+        </select>
+        <input type="number" id="amount" placeholder="Amount" step="0.01">
+        <button onclick="addTransaction()">Add Transaction</button>
 
-        <button type="submit">Add Transaction</button>
-    </form>
+        <h2>Delete Transactions</h2>
+        <input type="date" id="startDate" placeholder="Start Date">
+        <input type="date" id="endDate" placeholder="End Date">
+        <button onclick="deleteTransactions()">Delete Transactions</button>
 
-    <input type="text" id="search" placeholder="Search transactions...">
+        <h2>Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTable">
+                <!-- Transactions will be added here -->
+            </tbody>
+        </table>
+        <button onclick="downloadMonthlyPDF()">Download Monthly Report</button>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th>Amount (₹)</th>
-                <th>Category</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="transactionTable">
-            <!-- Transactions will be dynamically added here -->
-        </tbody>
-    </table>
-
-    <div id="chartContainer">
-        <canvas id="categoryChart"></canvas>
+        <h2>Visualizations</h2>
+        <canvas id="pieChart"></canvas>
     </div>
 
-    <button class="download-btn" onclick="downloadReport()">Download Monthly Report</button>
-
     <script>
-        const transactions = [];
-        const categories = {
-            Food: 0,
-            Stationary: 0,
-            Medicines: 0,
-            "Personal Usage": 0,
-            Transportation: 0,
-            Bills: 0,
-            Others: 0
+        const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+        const addTransaction = () => {
+            const date = document.getElementById("date").value;
+            const category = document.getElementById("category").value;
+            const type = document.getElementById("type").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+
+            if (!date || !amount) {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            const transaction = { date, category, type, amount };
+            transactions.push(transaction);
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+            alert("Transaction added!");
+            updateTransactionTable();
+            updatePieChart();
         };
 
-        const form = document.getElementById('transactionForm');
-        const tableBody = document.getElementById('transactionTable');
-        const searchInput = document.getElementById('search');
-        const categoryChart = new Chart(document.getElementById('categoryChart'), {
-            type: 'pie',
-            data: {
-                labels: Object.keys(categories),
-                datasets: [{
-                    label: 'Category Breakdown',
-                    data: Object.values(categories),
-                    backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff', '#ff9f40', '#c9cbcf']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+        const updateTransactionTable = () => {
+            const tableBody = document.getElementById("transactionTable");
+            tableBody.innerHTML = transactions.map(t => `
+                <tr>
+                    <td>${t.date}</td>
+                    <td>${t.category}</td>
+                    <td>${t.type}</td>
+                    <td>${t.amount}</td>
+                </tr>
+            `).join("");
+        };
+
+        const updatePieChart = () => {
+            const categoryTotals = {};
+            transactions.forEach(({ category, type, amount }) => {
+                if (type === "Expense") {
+                    categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+                }
+            });
+
+            new Chart(document.getElementById("pieChart").getContext("2d"), {
+                type: "pie",
+                data: {
+                    labels: Object.keys(categoryTotals),
+                    datasets: [{
+                        label: "Expenses by Category",
+                        data: Object.values(categoryTotals),
+                        backgroundColor: [
+                            "#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff", "#ff9f40"
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let percentage = ((context.raw / 
+                                        Object.values(categoryTotals).reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                    return `${context.label}: $${context.raw} (${percentage}%)`;
+                                }
+                            }
+                        }
                     }
                 }
+            });
+        };
+
+        const deleteTransactions = () => {
+            const startDate = new Date(document.getElementById("startDate").value);
+            const endDate = new Date(document.getElementById("endDate").value);
+
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates.");
+                return;
             }
-        });
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+            const filteredTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                return transactionDate < startDate || transactionDate > endDate;
+            });
 
-            const description = document.getElementById('description').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const category = document.getElementById('category').value;
+            if (filteredTransactions.length === transactions.length) {
+                alert("No transactions found in the selected date range.");
+            } else {
+                localStorage.setItem("transactions", JSON.stringify(filteredTransactions));
+                transactions.length = 0;
+                transactions.push(...filteredTransactions);
+                alert("Transactions deleted!");
+                updateTransactionTable();
+                updatePieChart();
+            }
+        };
 
-            transactions.push({ description, amount, category });
-            categories[category] += amount;
+        const downloadMonthlyPDF = () => {
+            const month = new Date().getMonth() + 1;
+            const monthlyTransactions = transactions.filter(t => new Date(t.date).getMonth() + 1 === month);
 
-            updateTable();
-            updateChart();
-            form.reset();
-        });
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-        searchInput.addEventListener('input', () => {
-            updateTable(searchInput.value);
-        });
+            doc.text(`Monthly Report - Month ${month}`, 10, 10);
+            let y = 20;
+            monthlyTransactions.forEach(t => {
+                doc.text(`${t.date} | ${t.category} | ${t.type} | $${t.amount}`, 10, y);
+                y += 10;
+            });
 
-        function updateTable(filter = '') {
-            tableBody.innerHTML = '';
-            transactions
-                .filter(t => t.description.toLowerCase().includes(filter.toLowerCase()))
-                .forEach((t, index) => {
-                    const row = document.createElement('tr');
+            doc.save(`Monthly_Report_Month_${month}.pdf`);
+        };
 
-                    row.innerHTML = `
-                        <td>${t.description}</td>
-                        <td>${t.amount.toFixed(2)}</td>
-                        <td>${t.category}</td>
-                        <td><button class="delete-btn" onclick="deleteTransaction(${index})">Delete</button></td>
-                    `;
-
-                    tableBody.appendChild(row);
-                });
-        }
-
-        function deleteTransaction(index) {
-            const category = transactions[index].category;
-            const amount = transactions[index].amount;
-
-            categories[category] -= amount;
-            transactions.splice(index, 1);
-
-            updateTable();
-            updateChart();
-        }
-
-        function updateChart() {
-            categoryChart.data.datasets[0].data = Object.values(categories);
-            categoryChart.update();
-        }
-
-        function downloadReport() {
-            const report = transactions.map(t => `Description: ${t.description}, Amount (₹): ${t.amount.toFixed(2)}, Category: ${t.category}`).join('\n');
-            const blob = new Blob([report], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Monthly_Report.txt';
-            link.click();
-        }
+        window.onload = () => {
+            updateTransactionTable();
+            updatePieChart();
+        };
     </script>
 </body>
 </html>
