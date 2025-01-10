@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Finance Manager</title>
+    <title>Yashika Tidke's Personal Finance Manager</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
             margin: 20px;
-            background-color: #f9f9f9;
+            background: linear-gradient(to right, #ece9e6, #ffffff);
             color: #333;
         }
         h1 {
@@ -92,6 +92,20 @@
         button.delete-btn:hover {
             background-color: #e53935;
         }
+        button.download-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        button.download-btn:hover {
+            background-color: #1976D2;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +115,7 @@
         <label for="description">Description:</label>
         <input type="text" id="description" placeholder="Enter description" required>
 
-        <label for="amount">Amount:</label>
+        <label for="amount">Amount (₹):</label>
         <input type="number" id="amount" placeholder="Enter amount" required>
 
         <label for="category">Category:</label>
@@ -124,7 +138,7 @@
         <thead>
             <tr>
                 <th>Description</th>
-                <th>Amount</th>
+                <th>Amount (₹)</th>
                 <th>Category</th>
                 <th>Actions</th>
             </tr>
@@ -137,6 +151,8 @@
     <div id="chartContainer">
         <canvas id="categoryChart"></canvas>
     </div>
+
+    <button class="download-btn" onclick="downloadReport()">Download Monthly Report</button>
 
     <script>
         const transactions = [];
@@ -224,6 +240,15 @@
         function updateChart() {
             categoryChart.data.datasets[0].data = Object.values(categories);
             categoryChart.update();
+        }
+
+        function downloadReport() {
+            const report = transactions.map(t => `Description: ${t.description}, Amount (₹): ${t.amount.toFixed(2)}, Category: ${t.category}`).join('\n');
+            const blob = new Blob([report], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Monthly_Report.txt';
+            link.click();
         }
     </script>
 </body>
