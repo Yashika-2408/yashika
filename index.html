@@ -7,28 +7,90 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        form label {
+            font-weight: bold;
+        }
+        form input, form select, form button {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        input#search {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: block;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
+        table th {
+            background-color: #4CAF50;
+            color: white;
             text-align: left;
+            padding: 10px;
         }
-        th {
-            background-color: #f4f4f4;
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
         }
         #chartContainer {
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
+        }
+        button.delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button.delete-btn:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
@@ -37,10 +99,10 @@
 
     <form id="transactionForm">
         <label for="description">Description:</label>
-        <input type="text" id="description" required>
+        <input type="text" id="description" placeholder="Enter description" required>
 
         <label for="amount">Amount:</label>
-        <input type="number" id="amount" required>
+        <input type="number" id="amount" placeholder="Enter amount" required>
 
         <label for="category">Category:</label>
         <select id="category">
@@ -78,14 +140,14 @@
 
     <script>
         const transactions = [];
-        const categories = { 
-            Food: 0, 
-            Stationary: 0, 
-            Medicines: 0, 
-            "Personal Usage": 0, 
-            Transportation: 0, 
-            Bills: 0, 
-            Others: 0 
+        const categories = {
+            Food: 0,
+            Stationary: 0,
+            Medicines: 0,
+            "Personal Usage": 0,
+            Transportation: 0,
+            Bills: 0,
+            Others: 0
         };
 
         const form = document.getElementById('transactionForm');
@@ -100,6 +162,14 @@
                     data: Object.values(categories),
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff', '#ff9f40', '#c9cbcf']
                 }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
             }
         });
 
@@ -133,7 +203,7 @@
                         <td>${t.description}</td>
                         <td>${t.amount.toFixed(2)}</td>
                         <td>${t.category}</td>
-                        <td><button onclick="deleteTransaction(${index})">Delete</button></td>
+                        <td><button class="delete-btn" onclick="deleteTransaction(${index})">Delete</button></td>
                     `;
 
                     tableBody.appendChild(row);
@@ -158,4 +228,3 @@
     </script>
 </body>
 </html>
-
